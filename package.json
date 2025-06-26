@@ -1,0 +1,13 @@
+{
+  "name": "aws-serverless-example",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Ville Sirviö",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.150",
+    "typescript": "^5.8.3"
+  }
+}

@@ -18,8 +18,8 @@ resource "aws_iam_role" "execution_role" {
 
 data "archive_file" "lambda_deployment_package" {
   type        = "zip"
-  source_file = "${path.module}/src/index.mjs"
-  output_path = "${path.module}/release/lambda_function.zip"
+  source_file = "${path.module}/build/ts-out/index.mjs"
+  output_path = "${path.module}/build/lambda_function.zip"
 }
 
 resource "aws_lambda_function" "main_function" {
