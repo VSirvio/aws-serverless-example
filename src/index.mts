@@ -57,14 +57,16 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         reviewId += '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[Math.floor(Math.random() * 32)];
       }
 
+      const finalReviewObject = {
+        id: reviewId,
+        date: new Date().toISOString().split('T')[0],
+        restaurant: newReview.restaurant,
+        stars: newReview.stars,
+      };
+
       const params = {
         TableName: tableName,
-        Item: {
-          id: reviewId,
-          date: new Date().toISOString().split('T')[0],
-          restaurant: newReview.restaurant,
-          stars: newReview.stars,
-        },
+        Item: finalReviewObject,
       };
 
       try {
@@ -73,7 +75,10 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         return { statusCode: 500 };
       }
 
-      return { statusCode: 201 };
+      return {
+        statusCode: 201,
+        body: JSON.stringify(finalReviewObject),
+      };
     }
   } else {
     const reviewId = path.substring(1);
