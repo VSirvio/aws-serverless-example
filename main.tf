@@ -1,5 +1,17 @@
 provider "aws" {}
 
+resource "aws_dynamodb_table" "restaurant_reviews_table" {
+  name           = "restaurant-reviews"
+  read_capacity  = 5
+  write_capacity = 5
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
 data "aws_iam_policy_document" "lambda_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -14,6 +26,11 @@ data "aws_iam_policy_document" "lambda_assume_role_policy" {
 resource "aws_iam_role" "execution_role" {
   name               = "serverless-example-project-execution-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "dynamodb_full_access_policy" {
+  role       = aws_iam_role.execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
 data "archive_file" "lambda_deployment_package" {
