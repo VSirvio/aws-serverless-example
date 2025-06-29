@@ -12,6 +12,8 @@ const dynamoDbClient = new DynamoDBClient({});
 
 const dynamoDbDocClient = DynamoDBDocumentClient.from(dynamoDbClient);
 
+const tableName = process.env.REVIEWS_TABLE_NAME;
+
 export const handler = async (event: LambdaFunctionURLEvent) => {
   const path = event.requestContext.http.path;
   const method = event.requestContext.http.method;
@@ -19,7 +21,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
   if (path === '/') {
     if (method === 'GET') {
       const params = {
-        TableName: 'restaurant-reviews',
+        TableName: tableName,
       };
 
       const data = await dynamoDbDocClient.send(new ScanCommand(params));
@@ -51,7 +53,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       }
 
       const params = {
-        TableName: "restaurant-reviews",
+        TableName: tableName,
         Item: {
           id: reviewId,
           date: new Date().toISOString().split('T')[0],
@@ -69,7 +71,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
     if (method === 'GET') {
       const params = {
-        TableName: "restaurant-reviews",
+        TableName: tableName,
         Key: {
           id: reviewId,
         },
@@ -87,7 +89,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       };
     } else if (method === 'DELETE') {
       const params = {
-        TableName: "restaurant-reviews",
+        TableName: tableName,
         Key: {
           id: reviewId,
         },
