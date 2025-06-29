@@ -28,6 +28,11 @@ resource "aws_iam_role" "execution_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_basic_execution_role_policy" {
+  role       = aws_iam_role.execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 resource "aws_iam_role_policy_attachment" "dynamodb_full_access_policy" {
   role       = aws_iam_role.execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
