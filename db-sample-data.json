@@ -1,0 +1,34 @@
+{
+  "restaurant-reviews": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "2NAW2" },
+          "date": { "S": "2025-04-16" },
+          "restaurant": { "S": "Texas Steak House" },
+          "stars": { "N": "4" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "A8BVM" },
+          "date": { "S": "2025-06-07" },
+          "restaurant": { "S": "Big Bob's Barbecue" },
+          "stars": { "N": "3" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "Z3Y9W" },
+          "date": { "S": "2025-06-18" },
+          "restaurant": { "S": "Luigi's Trattoria" },
+          "stars": { "N": "2" }
+        }
+      }
+    }
+  ]
+}
