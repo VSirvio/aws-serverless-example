@@ -24,7 +24,12 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         TableName: tableName,
       };
 
-      const data = await dynamoDbDocClient.send(new ScanCommand(params));
+      let data = null;
+      try {
+        data = await dynamoDbDocClient.send(new ScanCommand(params));
+      } catch {
+        return { statusCode: 500 };
+      }
 
       return {
         statusCode: 200,
@@ -62,7 +67,11 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         },
       };
 
-      await dynamoDbDocClient.send(new PutCommand(params));
+      try {
+        await dynamoDbDocClient.send(new PutCommand(params));
+      } catch {
+        return { statusCode: 500 };
+      }
 
       return { statusCode: 201 };
     }
@@ -77,7 +86,12 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         },
       };
 
-      const data = await dynamoDbDocClient.send(new GetCommand(params));
+      let data = null;
+      try {
+        data = await dynamoDbDocClient.send(new GetCommand(params));
+      } catch {
+        return { statusCode: 500 };
+      }
 
       if (!('Item' in data)) {
         return { statusCode: 404 };
@@ -95,7 +109,11 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         },
       };
 
-      await dynamoDbDocClient.send(new DeleteCommand(params));
+      try {
+        await dynamoDbDocClient.send(new DeleteCommand(params));
+      } catch {
+        return { statusCode: 500 };
+      }
 
       return { statusCode: 204 };
     }
