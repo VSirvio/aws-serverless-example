@@ -1,7 +1,11 @@
 provider "aws" {}
 
+locals {
+  reviews_table_name = "restaurant-reviews"
+}
+
 resource "aws_dynamodb_table" "restaurant_reviews_table" {
-  name           = "restaurant-reviews"
+  name           = local.reviews_table_name
   read_capacity  = 5
   write_capacity = 5
   hash_key       = "id"
@@ -51,6 +55,12 @@ resource "aws_lambda_function" "main_function" {
   handler          = "index.handler"
   source_code_hash = data.archive_file.lambda_deployment_package.output_base64sha256
   runtime          = "nodejs22.x"
+
+  environment {
+    variables = {
+      REVIEWS_TABLE_NAME = local.reviews_table_name
+    }
+  }
 }
 
 resource "aws_lambda_function_url" "main_function_url" {
