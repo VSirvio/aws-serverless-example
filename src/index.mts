@@ -52,6 +52,11 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         return { statusCode: 400 };
       }
 
+      const date = new Date(newReview.date);
+      if (isNaN(date.valueOf())) {
+        return { statusCode: 400 };
+      }
+
       let reviewId = '';
       for (let i = 0; i < 5; i++) {
         reviewId += '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[Math.floor(Math.random() * 32)];
@@ -59,7 +64,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
       const finalReviewObject = {
         id: reviewId,
-        date: new Date().toISOString().split('T')[0],
+        date: date.toISOString().slice(0, 10),
         restaurant: newReview.restaurant,
         stars: newReview.stars,
       };
