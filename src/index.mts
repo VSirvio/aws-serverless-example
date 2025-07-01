@@ -57,27 +57,35 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         return { statusCode: 400 };
       }
 
-      let reviewId = '';
-      for (let i = 0; i < 5; i++) {
-        reviewId += '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[Math.floor(Math.random() * 32)];
-      }
+      let finalReviewObject = null;
+      while (!finalReviewObject) {
+        let reviewId = '';
+        for (let i = 0; i < 5; i++) {
+          reviewId += '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[Math.floor(Math.random() * 32)];
+        }
 
-      const finalReviewObject = {
-        id: reviewId,
-        date: date.toISOString().slice(0, 10),
-        restaurant: newReview.restaurant,
-        stars: newReview.stars,
-      };
+        finalReviewObject = {
+          id: reviewId,
+          date: date.toISOString().slice(0, 10),
+          restaurant: newReview.restaurant,
+          stars: newReview.stars,
+        };
 
-      const params = {
-        TableName: tableName,
-        Item: finalReviewObject,
-      };
+        const params = {
+          TableName: tableName,
+          Item: finalReviewObject,
+          ConditionExpression: 'attribute_not_exists(id)',
+        };
 
-      try {
-        await dynamoDbDocClient.send(new PutCommand(params));
-      } catch {
-        return { statusCode: 500 };
+        try {
+          await dynamoDbDocClient.send(new PutCommand(params));
+        } catch (error) {
+          if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
+            finalReviewObject = null;
+          } else {
+            return { statusCode: 500 };
+          }
+        }
       }
 
       return {
