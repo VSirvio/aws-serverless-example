@@ -1,10 +1,15 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+  DynamoDBClient,
+  ReturnValue,
+} from '@aws-sdk/client-dynamodb';
 import {
   DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
+  NativeAttributeValue,
   PutCommand,
   ScanCommand,
+  UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { LambdaFunctionURLEvent } from 'aws-lambda';
 
@@ -134,6 +139,90 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       }
 
       return { statusCode: 204 };
+    } else if (method === 'PATCH') {
+      if (typeof event.body !== 'string') {
+        return { statusCode: 400 };
+      }
+
+      let reviewUpdate = null;
+      try {
+        reviewUpdate = JSON.parse(event.body);
+      } catch {
+        return { statusCode: 400 };
+      }
+
+      if (typeof reviewUpdate !== 'object') {
+        return { statusCode: 400 };
+      }
+
+      const updateExpression = [];
+      const expressionAttributeNames: Record<string, string> = { '#id': 'id' };
+      const expressionAttributeValues: Record<string, NativeAttributeValue> = { ':id': reviewId };
+
+      if (reviewUpdate.date !== undefined) {
+        const date = new Date(reviewUpdate.date);
+        if (isNaN(date.valueOf())) {
+          return { statusCode: 400 };
+        } else {
+          updateExpression.push('#date = :date');
+          expressionAttributeNames['#date'] = 'date';
+          expressionAttributeValues[':date'] = date.toISOString().slice(0, 10);
+        }
+      }
+
+      if (reviewUpdate.restaurant !== undefined) {
+        const restaurant = reviewUpdate.restaurant;
+        if (typeof restaurant !== 'string') {
+          return { statusCode: 400 };
+        } else {
+          updateExpression.push('#restaurant = :restaurant');
+          expressionAttributeNames['#restaurant'] = 'restaurant';
+          expressionAttributeValues[':restaurant'] = restaurant;
+        }
+      }
+
+      if (reviewUpdate.stars !== undefined) {
+        const stars = reviewUpdate.stars;
+        if (![1, 2, 3, 4, 5].includes(stars)) {
+          return { statusCode: 400 };
+        } else {
+          updateExpression.push('#stars = :stars');
+          expressionAttributeNames['#stars'] = 'stars';
+          expressionAttributeValues[':stars'] = stars;
+        }
+      }
+
+      if (updateExpression.length === 0) {
+        return { statusCode: 400 };
+      }
+
+      const params = {
+        TableName: tableName,
+        Key: {
+          id: reviewId,
+        },
+        UpdateExpression: `set ${updateExpression.join(', ')}`,
+        ConditionExpression: '#id = :id',
+        ExpressionAttributeNames: expressionAttributeNames,
+        ExpressionAttributeValues: expressionAttributeValues,
+        ReturnValues: ReturnValue.ALL_NEW,
+      };
+
+      let data = null;
+      try {
+        data = await dynamoDbDocClient.send(new UpdateCommand(params));
+      } catch (error) {
+        if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
+          return { statusCode: 404 };
+        } else {
+          return { statusCode: 500 };
+        }
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify(data.Attributes),
+      };
     }
   }
 
