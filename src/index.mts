@@ -158,13 +158,18 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         Key: {
           id: reviewId,
         },
+        ConditionExpression: 'attribute_exists(id)',
       };
 
       try {
         await dynamoDbDocClient.send(new DeleteCommand(params));
       } catch (error) {
-        console.error(`DELETE "/${reviewId}": DynamoDB Error: ${error}`);
-        return { statusCode: 500 };
+        if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
+          return { statusCode: 404 };
+        } else {
+          console.error(`DELETE "/${reviewId}": DynamoDB Error: ${error}`);
+          return { statusCode: 500 };
+        }
       }
 
       return { statusCode: 204 };
