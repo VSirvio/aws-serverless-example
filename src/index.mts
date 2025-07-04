@@ -32,7 +32,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       let data = null;
       try {
         data = await dynamoDbDocClient.send(new ScanCommand(params));
-      } catch {
+      } catch (error) {
+        console.error(`GET "/": DynamoDB Error: ${error}`);
         return { statusCode: 500 };
       }
 
@@ -88,6 +89,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
           if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
             finalReviewObject = null;
           } else {
+            console.error(`POST "/": DynamoDB Error: ${error}`);
             return { statusCode: 500 };
           }
         }
@@ -112,7 +114,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       let data = null;
       try {
         data = await dynamoDbDocClient.send(new GetCommand(params));
-      } catch {
+      } catch (error) {
+        console.error(`GET "/${reviewId}": DynamoDB Error: ${error}`);
         return { statusCode: 500 };
       }
 
@@ -134,7 +137,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
       try {
         await dynamoDbDocClient.send(new DeleteCommand(params));
-      } catch {
+      } catch (error) {
+        console.error(`DELETE "/${reviewId}": DynamoDB Error: ${error}`);
         return { statusCode: 500 };
       }
 
@@ -215,6 +219,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
           return { statusCode: 404 };
         } else {
+          console.error(`PATCH "/${reviewId}": DynamoDB Error: ${error}`);
           return { statusCode: 500 };
         }
       }
