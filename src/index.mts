@@ -39,28 +39,53 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
       return {
         statusCode: 200,
-        body: JSON.stringify(data.Items),
+        body: JSON.stringify({ data: data.Items }),
       };
     } else if (method === 'POST') {
       if (typeof event.body !== 'string') {
-        return { statusCode: 400 };
+          return {
+            statusCode: 400,
+            body: '{ "error": { "message": "Request body missing" } }',
+          };
       }
 
       let newReview = null;
       try {
         newReview = JSON.parse(event.body);
       } catch {
-        return { statusCode: 400 };
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "Request body not valid JSON" } }',
+        };
       }
 
-      if (typeof newReview !== 'object' || typeof newReview.restaurant !== 'string' ||
-          ![1, 2, 3, 4, 5].includes(newReview.stars)) {
-        return { statusCode: 400 };
+      if (typeof newReview !== 'object') {
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "Request body not a JSON object" } }',
+        };
+      }
+
+      if (typeof newReview.restaurant !== 'string') {
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "String value expected for \'restaurant\' field" } }',
+        };
+      }
+
+      if (![1, 2, 3, 4, 5].includes(newReview.stars)) {
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
+        };
       }
 
       const date = new Date(newReview.date);
       if (isNaN(date.valueOf())) {
-        return { statusCode: 400 };
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "Invalid date value for \'date\' field" } }',
+        };
       }
 
       let finalReviewObject = null;
@@ -125,7 +150,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
       return {
         statusCode: 200,
-        body: JSON.stringify(data.Item),
+        body: JSON.stringify({ data: data.Item }),
       };
     } else if (method === 'DELETE') {
       const params = {
@@ -145,18 +170,27 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       return { statusCode: 204 };
     } else if (method === 'PATCH') {
       if (typeof event.body !== 'string') {
-        return { statusCode: 400 };
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "Request body missing" } }',
+        };
       }
 
       let reviewUpdate = null;
       try {
         reviewUpdate = JSON.parse(event.body);
       } catch {
-        return { statusCode: 400 };
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "Request body not valid JSON" } }',
+        };
       }
 
       if (typeof reviewUpdate !== 'object') {
-        return { statusCode: 400 };
+        return {
+          statusCode: 400 ,
+          body: '{ "error": { "message": "Request body not a JSON object" } }',
+        };
       }
 
       const updateExpression = [];
@@ -166,7 +200,10 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       if (reviewUpdate.date !== undefined) {
         const date = new Date(reviewUpdate.date);
         if (isNaN(date.valueOf())) {
-          return { statusCode: 400 };
+          return {
+            statusCode: 400,
+            body: '{ "error": { "message": "Invalid date value for \'date\' field" } }',
+          };
         } else {
           updateExpression.push('#date = :date');
           expressionAttributeNames['#date'] = 'date';
@@ -177,7 +214,10 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       if (reviewUpdate.restaurant !== undefined) {
         const restaurant = reviewUpdate.restaurant;
         if (typeof restaurant !== 'string') {
-          return { statusCode: 400 };
+          return {
+            statusCode: 400,
+            body: '{ "error": { "message": "String value expected for \'restaurant\' field" } }',
+          };
         } else {
           updateExpression.push('#restaurant = :restaurant');
           expressionAttributeNames['#restaurant'] = 'restaurant';
@@ -188,7 +228,10 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       if (reviewUpdate.stars !== undefined) {
         const stars = reviewUpdate.stars;
         if (![1, 2, 3, 4, 5].includes(stars)) {
-          return { statusCode: 400 };
+          return {
+            statusCode: 400,
+            body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
+          };
         } else {
           updateExpression.push('#stars = :stars');
           expressionAttributeNames['#stars'] = 'stars';
@@ -197,7 +240,10 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       }
 
       if (updateExpression.length === 0) {
-        return { statusCode: 400 };
+        return {
+          statusCode: 400,
+          body: '{ "error": { "message": "Request did not include any data to update" } }',
+        };
       }
 
       const params = {
@@ -226,7 +272,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
       return {
         statusCode: 200,
-        body: JSON.stringify(data.Attributes),
+        body: JSON.stringify({ data: data.Attributes }),
       };
     }
   }
