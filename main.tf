@@ -54,7 +54,7 @@ resource "aws_lambda_function" "main_function" {
   role             = aws_iam_role.execution_role.arn
   handler          = "index.handler"
   source_code_hash = data.archive_file.lambda_deployment_package.output_base64sha256
-  runtime          = "nodejs22.x"
+  runtime          = "nodejs24.x"
 
   environment {
     variables = {
