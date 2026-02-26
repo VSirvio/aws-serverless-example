@@ -12,14 +12,26 @@ A simple example project I wrote to practice using AWS serverless functions ([AW
 | [package.json](https://github.com/VSirvio/aws-serverless-example/blob/main/package.json) | Node.js project configuration |
 | [tsconfig.json](https://github.com/VSirvio/aws-serverless-example/blob/main/tsconfig.json "tsconfig.json") | TypeScript compiler configuration |
 
+## How to build
+
+1. Make sure you have Node.js installed ([instructions here](https://nodejs.org/en/download))
+2. Install dependencies by executing in the project root directory:
+
+       npm ci
+
+3. Compile TypeScript code by executing in the project root directory:
+
+       npm run build
+
 ## Deploying to AWS
 
-1. Make sure you have Terraform installed ([instructions here](https://developer.hashicorp.com/terraform/install))
-2. Configure AWS provider for Terraform ([instructions here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration))
-3. Initialize Terraform by executing in the project root directory:
+1. Make sure you have followed the instructions in the `How to build` section
+2. Make sure you have Terraform installed ([instructions here](https://developer.hashicorp.com/terraform/install))
+3. Configure AWS provider for Terraform ([instructions here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration))
+4. Initialize Terraform by executing in the project root directory:
 
        terraform init
 
-4. Setup the infrastructure and deploy to AWS by executing in the project root directory:
+5. Setup the infrastructure and deploy to AWS by executing in the project root directory:
 
        terraform apply
