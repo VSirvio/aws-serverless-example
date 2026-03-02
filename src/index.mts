@@ -122,7 +122,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
       return {
         statusCode: 201,
-        body: JSON.stringify(finalReviewObject),
+        body: JSON.stringify({ data: finalReviewObject }),
       };
     }
   } else {
