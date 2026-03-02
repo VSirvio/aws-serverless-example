@@ -35,3 +35,133 @@ A simple example project I wrote to practice using AWS serverless functions ([AW
 5. Setup the infrastructure and deploy to AWS by executing in the project root directory:
 
        terraform apply
+
+## API reference
+
+| Endpoint     | Description                      |
+|--------------|----------------------------------|
+| GET /        | List all restaurant reviews      |
+| GET /{id}    | Get a restaurant review by id    |
+| POST /       | Add a new restaurant review      |
+| DELETE /{id} | Delete a restaurant review by id |
+| PATCH /{id}  | Edit a restaurant review by id   |
+
+### GET /
+
+List all restaurant reviews
+
+#### Sample request
+
+```bash
+curl -X GET "https://$API_URL/"
+```
+
+#### Sample response
+
+```json
+{
+  "data": [
+    {
+      "id": "A8BVM",
+      "date": "2025-06-07",
+      "restaurant": "Big Bob's Barbecue",
+      "stars": 3
+    },
+    {
+      "id": "Z3Y9W",
+      "date": "2025-06-18",
+      "restaurant": "Luigi's Trattoria",
+      "stars": 2
+    }
+  ]
+}
+```
+
+### GET /{id}
+
+Get a restaurant review by id
+
+#### Sample request
+
+```bash
+curl -X GET "https://$API_URL/A8BVM"
+```
+
+#### Sample response
+
+```json
+{
+  "data": {
+    "id": "A8BVM",
+    "date": "2025-06-07",
+    "restaurant": "Big Bob's Barbecue",
+    "stars": 3
+  }
+}
+```
+
+### POST /
+
+Add a new restaurant review
+
+#### Sample request
+
+```bash
+curl -X POST "https://$API_URL/" \
+     -H 'Content-Type: application/json' \
+     -d '{"date": "2025-04-16", "restaurant": "Texas Steak House", "stars": 4}'
+```
+
+#### Sample response
+
+```json
+{
+  "data": {
+    "id": "2NAW2",
+    "date": "2025-04-16",
+    "restaurant": "Texas Steak House",
+    "stars": 4
+  }
+}
+```
+
+### DELETE /{id}
+
+Delete a restaurant review by id
+
+#### Sample request
+
+```bash
+curl -X DELETE "https://$API_URL/2NAW2"
+```
+
+#### Sample response
+
+```
+–
+```
+
+### PATCH /{id}
+
+Edit a restaurant review by id
+
+#### Sample request
+
+```bash
+curl -X PATCH "https://$API_URL/2NAW2" \
+     -H 'Content-Type: application/json' \
+     -d '{"restaurant": "Texas Coffee House", "stars": 3}'
+```
+
+#### Sample response
+
+```json
+{
+  "data": {
+    "id": "2NAW2",
+    "date": "2025-04-16",
+    "restaurant": "Texas Coffee House",
+    "stars": 3
+  }
+}
+```
