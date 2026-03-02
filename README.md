@@ -1,6 +1,6 @@
 # aws-serverless-example
 
-A simple example project I wrote to practice using AWS serverless functions ([AWS Lambda](https://aws.amazon.com/lambda)), [DynamoDB](https://aws.amazon.com/dynamodb) and [Terraform](https://www.terraform.io). All of the project's source code is currently inconveniently in just one file `src/index.mts`. It could be improved by separating database-related code and Lambda-related code to separate files.
+A simple example project I wrote to practice using AWS serverless functions ([AWS Lambda](https://aws.amazon.com/lambda)), [DynamoDB](https://aws.amazon.com/dynamodb) and [Terraform](https://www.terraform.io). It is a REST API for creating, viewing and managing restaurant reviews. All of the project's source code is currently inconveniently in just one file `src/index.mts`. It could be improved by separating database-related code and Lambda-related code to separate files.
 
 ## Project structure
 
