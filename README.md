@@ -38,13 +38,13 @@ A simple example project I wrote to practice using AWS serverless functions ([AW
 
 ## API reference
 
-| Endpoint     | Description                      |
-|--------------|----------------------------------|
-| GET /        | List all restaurant reviews      |
-| GET /{id}    | Get a restaurant review by id    |
-| POST /       | Add a new restaurant review      |
-| DELETE /{id} | Delete a restaurant review by id |
-| PATCH /{id}  | Edit a restaurant review by id   |
+| Endpoint                                                                                       | Description                      |
+|------------------------------------------------------------------------------------------------|----------------------------------|
+| [GET /](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-)             | List all restaurant reviews      |
+| [GET /{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-id)       | Get a restaurant review by id    |
+| [POST /](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#post-)           | Add a new restaurant review      |
+| [DELETE /{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#delete-id) | Delete a restaurant review by id |
+| [PATCH /{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#patch-id)   | Edit a restaurant review by id   |
 
 ### GET /
 
