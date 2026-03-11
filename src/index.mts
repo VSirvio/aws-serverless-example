@@ -8,10 +8,11 @@ import {
   GetCommand,
   NativeAttributeValue,
   PutCommand,
-  ScanCommand,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { LambdaFunctionURLEvent } from 'aws-lambda';
+
+import * as review from './review';
 
 const dynamoDbClient = new DynamoDBClient({});
 
@@ -19,65 +20,48 @@ const dynamoDbDocClient = DynamoDBDocumentClient.from(dynamoDbClient);
 
 const tableName = process.env.REVIEWS_TABLE_NAME;
 
+const status200WithData = (data: Record<string, any>) => {
+  return { statusCode: 200, body: JSON.stringify({ data }) };
+};
+
+const status400WithMessage = (message: string) => {
+  return { statusCode: 400, body: JSON.stringify({ error: { message } }) };
+};
+
 export const handler = async (event: LambdaFunctionURLEvent) => {
   const path = event.requestContext.http.path;
   const method = event.requestContext.http.method;
 
   if (path === '/') {
     if (method === 'GET') {
-      const params = {
-        TableName: tableName,
-      };
-
-      let data = null;
       try {
-        data = await dynamoDbDocClient.send(new ScanCommand(params));
+        return status200WithData(await review.getAll());
       } catch (error) {
-        console.error(`GET "/": DynamoDB Error: ${error}`);
+        console.error(`GET "/": ${error}`);
         return { statusCode: 500 };
       }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ data: data.Items }),
-      };
     } else if (method === 'POST') {
       if (typeof event.body !== 'string') {
-          return {
-            statusCode: 400,
-            body: '{ "error": { "message": "Request body missing" } }',
-          };
+          return status400WithMessage('Request body missing');
       }
 
       let newReview = null;
       try {
         newReview = JSON.parse(event.body);
       } catch {
-        return {
-          statusCode: 400,
-          body: '{ "error": { "message": "Request body not valid JSON" } }',
-        };
+        return status400WithMessage('Request body not valid JSON');
       }
 
       if (typeof newReview !== 'object') {
-        return {
-          statusCode: 400,
-          body: '{ "error": { "message": "Request body not a JSON object" } }',
-        };
+        return status400WithMessage('Request body not a JSON object');
       }
 
       if (typeof newReview.restaurant !== 'string') {
-        return {
-          statusCode: 400,
-          body: '{ "error": { "message": "String value expected for \'restaurant\' field" } }',
-        };
+        return status400WithMessage("String value expected for 'restaurant' field");
       }
 
       if (![1, 2, 3, 4, 5].includes(newReview.stars)) {
-        return {
-          statusCode: 400,
-          body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
-        };
+        return status400WithMessage("Integer between 1-5 expected for 'stars' field");
       }
 
       const date = new Date(newReview.date);
@@ -153,26 +137,16 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         body: JSON.stringify({ data: data.Item }),
       };
     } else if (method === 'DELETE') {
-      const params = {
-        TableName: tableName,
-        Key: {
-          id: reviewId,
-        },
-        ConditionExpression: 'attribute_exists(id)',
-      };
-
       try {
-        await dynamoDbDocClient.send(new DeleteCommand(params));
-      } catch (error) {
-        if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
-          return { statusCode: 404 };
-        } else {
-          console.error(`DELETE "/${reviewId}": DynamoDB Error: ${error}`);
-          return { statusCode: 500 };
-        }
-      }
+        const result = review.delete(reviewId);
 
-      return { statusCode: 204 };
+        if (!result) {
+          return { statusCode: 404 };
+        }
+      } catch (error) {
+        console.error(`DELETE "/${reviewId}": ${error}`);
+        return { statusCode: 500 };
+      }
     } else if (method === 'PATCH') {
       if (typeof event.body !== 'string') {
         return {
