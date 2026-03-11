@@ -7,8 +7,6 @@ import {
   DynamoDBDocumentClient,
   GetCommand,
   NativeAttributeValue,
-  PutCommand,
-  ScanCommand,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { LambdaFunctionURLEvent } from 'aws-lambda';
@@ -86,41 +84,23 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         };
       }
 
-      let finalReviewObject = null;
-      while (!finalReviewObject) {
-        let reviewId = '';
-        for (let i = 0; i < 5; i++) {
-          reviewId += '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[Math.floor(Math.random() * 32)];
-        }
-
-        finalReviewObject = {
-          id: reviewId,
+      let createdReview = null;
+      try {
+        const reviewData = {
           date: date.toISOString().slice(0, 10),
           restaurant: newReview.restaurant,
           stars: newReview.stars,
         };
 
-        const params = {
-          TableName: tableName,
-          Item: finalReviewObject,
-          ConditionExpression: 'attribute_not_exists(id)',
-        };
-
-        try {
-          await dynamoDbDocClient.send(new PutCommand(params));
-        } catch (error) {
-          if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
-            finalReviewObject = null;
-          } else {
-            console.error(`POST "/": DynamoDB Error: ${error}`);
-            return { statusCode: 500 };
-          }
-        }
+        createdReview = await review.create(reviewData);
+      } catch (error) {
+        console.error(`POST "/": Database Error: ${error}`);
+        return { statusCode: 500 };
       }
 
       return {
         statusCode: 201,
-        body: JSON.stringify({ data: finalReviewObject }),
+        body: JSON.stringify({ data: createdReview }),
       };
     }
   } else {
