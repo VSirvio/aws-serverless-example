@@ -1,22 +1,7 @@
-import {
-  DynamoDBClient,
-  ReturnValue,
-} from '@aws-sdk/client-dynamodb';
-import {
-  DynamoDBDocumentClient,
-  NativeAttributeValue,
-  UpdateCommand,
-} from '@aws-sdk/lib-dynamodb';
 import { LambdaFunctionURLEvent } from 'aws-lambda';
 
 import * as review from './database/review.mjs';
 
-
-const dynamoDbClient = new DynamoDBClient({});
-
-const dynamoDbDocClient = DynamoDBDocumentClient.from(dynamoDbClient);
-
-const tableName = process.env.REVIEWS_TABLE_NAME;
 
 export const handler = async (event: LambdaFunctionURLEvent) => {
   const path = event.requestContext.http.path;
@@ -162,86 +147,63 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         };
       }
 
-      const updateExpression = [];
-      const expressionAttributeNames: Record<string, string> = { '#id': 'id' };
-      const expressionAttributeValues: Record<string, NativeAttributeValue> = { ':id': reviewId };
+      let updateIsEmpty = true;
 
       if (reviewUpdate.date !== undefined) {
-        const date = new Date(reviewUpdate.date);
-        if (isNaN(date.valueOf())) {
+        updateIsEmpty = false;
+
+        if (isNaN(new Date(reviewUpdate.date).valueOf())) {
           return {
             statusCode: 400,
             body: '{ "error": { "message": "Invalid date value for \'date\' field" } }',
           };
-        } else {
-          updateExpression.push('#date = :date');
-          expressionAttributeNames['#date'] = 'date';
-          expressionAttributeValues[':date'] = date.toISOString().slice(0, 10);
         }
       }
 
       if (reviewUpdate.restaurant !== undefined) {
-        const restaurant = reviewUpdate.restaurant;
-        if (typeof restaurant !== 'string') {
+        updateIsEmpty = false;
+
+        if (typeof reviewUpdate.restaurant !== 'string') {
           return {
             statusCode: 400,
             body: '{ "error": { "message": "String value expected for \'restaurant\' field" } }',
           };
-        } else {
-          updateExpression.push('#restaurant = :restaurant');
-          expressionAttributeNames['#restaurant'] = 'restaurant';
-          expressionAttributeValues[':restaurant'] = restaurant;
         }
       }
 
       if (reviewUpdate.stars !== undefined) {
-        const stars = reviewUpdate.stars;
-        if (![1, 2, 3, 4, 5].includes(stars)) {
+        updateIsEmpty = false;
+
+        if (![1, 2, 3, 4, 5].includes(reviewUpdate.stars)) {
           return {
             statusCode: 400,
             body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
           };
-        } else {
-          updateExpression.push('#stars = :stars');
-          expressionAttributeNames['#stars'] = 'stars';
-          expressionAttributeValues[':stars'] = stars;
         }
       }
 
-      if (updateExpression.length === 0) {
+      if (updateIsEmpty) {
         return {
           statusCode: 400,
           body: '{ "error": { "message": "Request did not include any data to update" } }',
         };
       }
 
-      const params = {
-        TableName: tableName,
-        Key: {
-          id: reviewId,
-        },
-        UpdateExpression: `set ${updateExpression.join(', ')}`,
-        ConditionExpression: '#id = :id',
-        ExpressionAttributeNames: expressionAttributeNames,
-        ExpressionAttributeValues: expressionAttributeValues,
-        ReturnValues: ReturnValue.ALL_NEW,
-      };
-
-      let data = null;
+      let updatedReview = null;
       try {
-        data = await dynamoDbDocClient.send(new UpdateCommand(params));
+        updatedReview = await review.update(reviewId, reviewUpdate);
       } catch (error) {
-        if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
-          return { statusCode: 404 };
-        } else {
-          console.error(`PATCH "/${reviewId}": DynamoDB Error: ${error}`);
-          return { statusCode: 500 };
-        }
+        console.error(`PATCH "/${reviewId}": Database Error: ${error}`);
+        return { statusCode: 500 };
+      }
+
+      if (!updatedReview) {
+        return { statusCode: 404 };
       }
 
       return {
         statusCode: 200,
-        body: JSON.stringify({ data: data.Attributes }),
+        body: JSON.stringify({ data: updatedReview }),
       };
     }
   }

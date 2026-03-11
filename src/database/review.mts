@@ -1,13 +1,16 @@
 import {
   DynamoDBClient,
+  ReturnValue,
 } from '@aws-sdk/client-dynamodb';
 
 import {
   DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
+  NativeAttributeValue,
   PutCommand,
   ScanCommand,
+  UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
 
@@ -64,6 +67,7 @@ export const create = async (review: Record<string, any>) => {
   return finalReviewObject;
 };
 
+
 export const getById = async (reviewId: string) => {
   const params = {
     TableName: tableName,
@@ -101,4 +105,54 @@ export const remove = async (reviewId: string) => {
   }
 
   return true;
+};
+
+
+export const update = async (reviewId: string, newData: Record<string, any>) => {
+  const updateExpression = [];
+  const expressionAttributeNames: Record<string, string> = { '#id': 'id' };
+  const expressionAttributeValues: Record<string, NativeAttributeValue> = { ':id': reviewId };
+
+  if (newData.date !== undefined) {
+    updateExpression.push('#date = :date');
+    expressionAttributeNames['#date'] = 'date';
+    expressionAttributeValues[':date'] = new Date(newData.date).toISOString().slice(0, 10);
+  }
+
+  if (newData.restaurant !== undefined) {
+    updateExpression.push('#restaurant = :restaurant');
+    expressionAttributeNames['#restaurant'] = 'restaurant';
+    expressionAttributeValues[':restaurant'] = newData.restaurant;
+  }
+
+  if (newData.stars !== undefined) {
+    updateExpression.push('#stars = :stars');
+    expressionAttributeNames['#stars'] = 'stars';
+    expressionAttributeValues[':stars'] = newData.stars;
+  }
+
+  const params = {
+    TableName: tableName,
+    Key: {
+      id: reviewId,
+    },
+    UpdateExpression: `set ${updateExpression.join(', ')}`,
+    ConditionExpression: '#id = :id',
+    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
+    ReturnValues: ReturnValue.ALL_NEW,
+  };
+
+  let data = null;
+  try {
+    data = await dynamoDbDocClient.send(new UpdateCommand(params));
+  } catch (error) {
+    if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
+      return null;
+    } else {
+      throw error;
+    }
+  }
+
+  return data.Attributes;
 };
