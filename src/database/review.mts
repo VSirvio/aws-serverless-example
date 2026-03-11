@@ -4,6 +4,7 @@ import {
 
 import {
   DynamoDBDocumentClient,
+  GetCommand,
   PutCommand,
   ScanCommand,
 } from '@aws-sdk/lib-dynamodb';
@@ -60,4 +61,21 @@ export const create = async (review: Record<string, any>) => {
   }
 
   return finalReviewObject;
+};
+
+export const getById = async (reviewId: string) => {
+  const params = {
+    TableName: tableName,
+    Key: {
+      id: reviewId,
+    },
+  };
+
+  const data = await dynamoDbDocClient.send(new GetCommand(params));
+
+  if (!data.Item) {
+    return null;
+  }
+
+  return data.Item;
 };

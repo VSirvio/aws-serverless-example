@@ -5,7 +5,6 @@ import {
 import {
   DeleteCommand,
   DynamoDBDocumentClient,
-  GetCommand,
   NativeAttributeValue,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
@@ -107,28 +106,22 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
     const reviewId = path.substring(1);
 
     if (method === 'GET') {
-      const params = {
-        TableName: tableName,
-        Key: {
-          id: reviewId,
-        },
-      };
+      let fetchedReview = null;
 
-      let data = null;
       try {
-        data = await dynamoDbDocClient.send(new GetCommand(params));
+        fetchedReview = await review.getById(reviewId);
       } catch (error) {
-        console.error(`GET "/${reviewId}": DynamoDB Error: ${error}`);
+        console.error(`GET "/${reviewId}": Database Error: ${error}`);
         return { statusCode: 500 };
       }
 
-      if (!('Item' in data)) {
+      if (!fetchedReview) {
         return { statusCode: 404 };
       }
 
       return {
         statusCode: 200,
-        body: JSON.stringify({ data: data.Item }),
+        body: JSON.stringify({ data: fetchedReview }),
       };
     } else if (method === 'DELETE') {
       const params = {
