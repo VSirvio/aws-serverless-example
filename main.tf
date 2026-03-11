@@ -44,7 +44,7 @@ resource "aws_iam_role_policy_attachment" "dynamodb_full_access_policy" {
 
 data "archive_file" "lambda_deployment_package" {
   type        = "zip"
-  source_file = "${path.module}/build/ts-out/index.mjs"
+  source_dir  = "${path.module}/build/ts-out"
   output_path = "${path.module}/build/lambda_function.zip"
 }
 
