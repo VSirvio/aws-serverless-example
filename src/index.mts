@@ -3,7 +3,6 @@ import {
   ReturnValue,
 } from '@aws-sdk/client-dynamodb';
 import {
-  DeleteCommand,
   DynamoDBDocumentClient,
   NativeAttributeValue,
   UpdateCommand,
@@ -124,23 +123,17 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
         body: JSON.stringify({ data: fetchedReview }),
       };
     } else if (method === 'DELETE') {
-      const params = {
-        TableName: tableName,
-        Key: {
-          id: reviewId,
-        },
-        ConditionExpression: 'attribute_exists(id)',
-      };
+      let deletionSuccessful = true;
 
       try {
-        await dynamoDbDocClient.send(new DeleteCommand(params));
+        deletionSuccessful = await review.remove(reviewId);
       } catch (error) {
-        if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
-          return { statusCode: 404 };
-        } else {
-          console.error(`DELETE "/${reviewId}": DynamoDB Error: ${error}`);
-          return { statusCode: 500 };
-        }
+        console.error(`DELETE "/${reviewId}": Database Error: ${error}`);
+        return { statusCode: 500 };
+      }
+
+      if (!deletionSuccessful) {
+        return { statusCode: 404 };
       }
 
       return { statusCode: 204 };

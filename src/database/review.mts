@@ -3,6 +3,7 @@ import {
 } from '@aws-sdk/client-dynamodb';
 
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
@@ -78,4 +79,26 @@ export const getById = async (reviewId: string) => {
   }
 
   return data.Item;
+};
+
+export const remove = async (reviewId: string) => {
+  const params = {
+    TableName: tableName,
+    Key: {
+      id: reviewId,
+    },
+    ConditionExpression: 'attribute_exists(id)',
+  };
+
+  try {
+    await dynamoDbDocClient.send(new DeleteCommand(params));
+  } catch (error) {
+    if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
+      return false;
+    } else {
+      throw error;
+    }
+  }
+
+  return true;
 };
