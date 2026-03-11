@@ -13,6 +13,9 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { LambdaFunctionURLEvent } from 'aws-lambda';
 
+import * as review from './database/review.mjs';
+
+
 const dynamoDbClient = new DynamoDBClient({});
 
 const dynamoDbDocClient = DynamoDBDocumentClient.from(dynamoDbClient);
@@ -25,22 +28,17 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
   if (path === '/') {
     if (method === 'GET') {
-      const params = {
-        TableName: tableName,
-      };
-
-      let data = null;
       try {
-        data = await dynamoDbDocClient.send(new ScanCommand(params));
+        const fetchedReviews = await review.getAll();
+
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ data: fetchedReviews }),
+        };
       } catch (error) {
-        console.error(`GET "/": DynamoDB Error: ${error}`);
+        console.error(`GET "/": Database Error: ${error}`);
         return { statusCode: 500 };
       }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ data: data.Items }),
-      };
     } else if (method === 'POST') {
       if (typeof event.body !== 'string') {
           return {
