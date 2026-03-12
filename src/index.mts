@@ -9,22 +9,17 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
   if (path === '/') {
     if (method === 'GET') {
-      const httpResponse = reviewsRequestHandler.get(event);
-      return httpResponse;
+      return reviewsRequestHandler.get(event);
     } else if (method === 'POST') {
-      const httpResponse = reviewsRequestHandler.post(event);
-      return httpResponse;
+      return reviewsRequestHandler.post(event);
     }
   } else if (path.match('^/[A-Z0-9]{5}$')) {
     if (method === 'GET') {
-      const httpResponse = reviewsRequestHandler.getById(event);
-      return httpResponse;
+      return reviewsRequestHandler.getById(event);
     } else if (method === 'DELETE') {
-      const httpResponse = reviewsRequestHandler.del(event);
-      return httpResponse;
+      return reviewsRequestHandler.del(event);
     } else if (method === 'PATCH') {
-      const httpResponse = reviewsRequestHandler.patch(event);
-      return httpResponse;
+      return reviewsRequestHandler.patch(event);
     }
   }
 
