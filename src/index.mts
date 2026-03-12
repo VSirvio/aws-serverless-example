@@ -28,5 +28,5 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
     }
   }
 
-  return { statusCode: 501 };
+  return { statusCode: 404 };
 };
