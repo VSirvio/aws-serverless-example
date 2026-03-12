@@ -20,23 +20,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
     const reviewId = path.substring(1);
 
     if (method === 'GET') {
-      let fetchedReview = null;
-
-      try {
-        fetchedReview = await review.getById(reviewId);
-      } catch (error) {
-        console.error(`GET "/${reviewId}": Database Error: ${error}`);
-        return { statusCode: 500 };
-      }
-
-      if (!fetchedReview) {
-        return { statusCode: 404 };
-      }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ data: fetchedReview }),
-      };
+      const httpResponse = reviewsRequestHandler.getById(event);
+      return httpResponse;
     } else if (method === 'DELETE') {
       let deletionSuccessful = true;
 

@@ -84,3 +84,26 @@ export const post = async (event: LambdaFunctionURLEvent) => {
     body: JSON.stringify({ data: createdReview }),
   };
 };
+
+
+export const getById = async (event: LambdaFunctionURLEvent) => {
+  const reviewId = event.requestContext.http.path.substring(1);
+
+  let fetchedReview = null;
+
+  try {
+    fetchedReview = await reviewsDb.getById(reviewId);
+  } catch (error) {
+    console.error(`GET "/${reviewId}": Database Error: ${error}`);
+    return { statusCode: 500 };
+  }
+
+  if (!fetchedReview) {
+    return { statusCode: 404 };
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ data: fetchedReview }),
+  };
+};
