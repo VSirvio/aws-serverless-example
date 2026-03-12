@@ -1,6 +1,5 @@
 import { LambdaFunctionURLEvent } from 'aws-lambda';
 
-import * as review from './database/review.mjs';
 import * as reviewsRequestHandler from './http-request-handlers/review.mjs';
 
 
@@ -17,8 +16,6 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       return httpResponse;
     }
   } else {
-    const reviewId = path.substring(1);
-
     if (method === 'GET') {
       const httpResponse = reviewsRequestHandler.getById(event);
       return httpResponse;
@@ -26,88 +23,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       const httpResponse = reviewsRequestHandler.del(event);
       return httpResponse;
     } else if (method === 'PATCH') {
-      if (typeof event.body !== 'string') {
-        return {
-          statusCode: 400,
-          body: '{ "error": { "message": "Request body missing" } }',
-        };
-      }
-
-      let reviewUpdate = null;
-      try {
-        reviewUpdate = JSON.parse(event.body);
-      } catch {
-        return {
-          statusCode: 400,
-          body: '{ "error": { "message": "Request body not valid JSON" } }',
-        };
-      }
-
-      if (typeof reviewUpdate !== 'object') {
-        return {
-          statusCode: 400 ,
-          body: '{ "error": { "message": "Request body not a JSON object" } }',
-        };
-      }
-
-      let updateIsEmpty = true;
-
-      if (reviewUpdate.date !== undefined) {
-        updateIsEmpty = false;
-
-        if (isNaN(new Date(reviewUpdate.date).valueOf())) {
-          return {
-            statusCode: 400,
-            body: '{ "error": { "message": "Invalid date value for \'date\' field" } }',
-          };
-        }
-      }
-
-      if (reviewUpdate.restaurant !== undefined) {
-        updateIsEmpty = false;
-
-        if (typeof reviewUpdate.restaurant !== 'string') {
-          return {
-            statusCode: 400,
-            body: '{ "error": { "message": "String value expected for \'restaurant\' field" } }',
-          };
-        }
-      }
-
-      if (reviewUpdate.stars !== undefined) {
-        updateIsEmpty = false;
-
-        if (![1, 2, 3, 4, 5].includes(reviewUpdate.stars)) {
-          return {
-            statusCode: 400,
-            body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
-          };
-        }
-      }
-
-      if (updateIsEmpty) {
-        return {
-          statusCode: 400,
-          body: '{ "error": { "message": "Request did not include any data to update" } }',
-        };
-      }
-
-      let updatedReview = null;
-      try {
-        updatedReview = await review.update(reviewId, reviewUpdate);
-      } catch (error) {
-        console.error(`PATCH "/${reviewId}": Database Error: ${error}`);
-        return { statusCode: 500 };
-      }
-
-      if (!updatedReview) {
-        return { statusCode: 404 };
-      }
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ data: updatedReview }),
-      };
+      const httpResponse = reviewsRequestHandler.patch(event);
+      return httpResponse;
     }
   }
 

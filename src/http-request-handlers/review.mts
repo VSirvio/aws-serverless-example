@@ -127,3 +127,91 @@ export const del = async (event: LambdaFunctionURLEvent) => {
 
   return { statusCode: 204 };
 };
+
+
+export const patch = async (event: LambdaFunctionURLEvent) => {
+  const reviewId = event.requestContext.http.path.substring(1);
+
+  if (typeof event.body !== 'string') {
+    return {
+      statusCode: 400,
+      body: '{ "error": { "message": "Request body missing" } }',
+    };
+  }
+
+  let reviewUpdate = null;
+  try {
+    reviewUpdate = JSON.parse(event.body);
+  } catch {
+    return {
+      statusCode: 400,
+      body: '{ "error": { "message": "Request body not valid JSON" } }',
+    };
+  }
+
+  if (typeof reviewUpdate !== 'object') {
+    return {
+      statusCode: 400 ,
+      body: '{ "error": { "message": "Request body not a JSON object" } }',
+    };
+  }
+
+  let updateIsEmpty = true;
+
+  if (reviewUpdate.date !== undefined) {
+    updateIsEmpty = false;
+
+    if (isNaN(new Date(reviewUpdate.date).valueOf())) {
+      return {
+        statusCode: 400,
+        body: '{ "error": { "message": "Invalid date value for \'date\' field" } }',
+      };
+    }
+  }
+
+  if (reviewUpdate.restaurant !== undefined) {
+    updateIsEmpty = false;
+
+    if (typeof reviewUpdate.restaurant !== 'string') {
+      return {
+        statusCode: 400,
+        body: '{ "error": { "message": "String value expected for \'restaurant\' field" } }',
+      };
+    }
+  }
+
+  if (reviewUpdate.stars !== undefined) {
+    updateIsEmpty = false;
+
+    if (![1, 2, 3, 4, 5].includes(reviewUpdate.stars)) {
+      return {
+        statusCode: 400,
+        body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
+      };
+    }
+  }
+
+  if (updateIsEmpty) {
+    return {
+      statusCode: 400,
+      body: '{ "error": { "message": "Request did not include any data to update" } }',
+    };
+  }
+
+  let updatedReview = null;
+  try {
+    updatedReview = await reviewsDb.update(reviewId, reviewUpdate);
+  } catch (error) {
+    console.error(`PATCH "/${reviewId}": Database Error: ${error}`);
+    return { statusCode: 500 };
+  }
+
+  if (!updatedReview) {
+    return { statusCode: 404 };
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ data: updatedReview }),
+  };
+};
