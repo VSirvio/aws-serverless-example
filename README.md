@@ -8,7 +8,7 @@ A simple example project I wrote to practice using AWS serverless functions ([AW
 | ---- | -----|
 | [src/index.mts](https://github.com/VSirvio/aws-serverless-example/blob/main/src/index.mts) | Lambda handler function |
 | [src/database/review.mts](https://github.com/VSirvio/aws-serverless-example/blob/main/src/database/review.mts) | functions for interacting with the database |
-| [src/http-request-handlers/review.mts](https://github.com/VSirvio/aws-serverless-example/blob/main/src/http-request-handlers/review.mts) | one HTTP request handler for each API endpoint |
+| [src/http-request-handlers/review.mts](https://github.com/VSirvio/aws-serverless-example/blob/main/src/http-request-handlers/review.mts) | HTTP request handler functions |
 | [db-sample-data.json](https://github.com/VSirvio/aws-serverless-example/blob/main/db-sample-data.json) | sample data for DB |
 | [main.tf](https://github.com/VSirvio/aws-serverless-example/blob/main/main.tf) | Terraform configuration |
 
