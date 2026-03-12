@@ -15,7 +15,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       const httpResponse = reviewsRequestHandler.post(event);
       return httpResponse;
     }
-  } else {
+  } else if (path.match('^/[A-Z0-9]{5}$')) {
     if (method === 'GET') {
       const httpResponse = reviewsRequestHandler.getById(event);
       return httpResponse;
