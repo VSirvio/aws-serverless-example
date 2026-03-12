@@ -38,13 +38,13 @@ A simple example project I wrote to practice using AWS serverless functions ([AW
 
 ## API reference
 
-| Endpoint                                                                                               | Description                      |
-|--------------------------------------------------------------------------------------------------------|----------------------------------|
-| [GET /reviews](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-)              | List all restaurant reviews      |
-| [GET /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-id)       | Get a restaurant review by id    |
-| [POST /reviews](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#post-)            | Add a new restaurant review      |
-| [DELETE /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#delete-id) | Delete a restaurant review by id |
-| [PATCH /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#patch-id)   | Edit a restaurant review by id   |
+| Endpoint                                                                                                      | Description                      |
+|---------------------------------------------------------------------------------------------------------------|----------------------------------|
+| [GET /reviews](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-reviews)              | List all restaurant reviews      |
+| [GET /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-reviewsid)       | Get a restaurant review by id    |
+| [POST /reviews](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#post-reviews)            | Add a new restaurant review      |
+| [DELETE /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#delete-reviewsid) | Delete a restaurant review by id |
+| [PATCH /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#patch-reviewsid)   | Edit a restaurant review by id   |
 
 ### GET /reviews
 
