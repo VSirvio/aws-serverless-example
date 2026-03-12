@@ -1,6 +1,7 @@
 import { LambdaFunctionURLEvent } from 'aws-lambda';
 
 import * as review from './database/review.mjs';
+import * as reviewsRequestHandler from './http-request-handlers/review.mjs';
 
 
 export const handler = async (event: LambdaFunctionURLEvent) => {
@@ -9,17 +10,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
 
   if (path === '/') {
     if (method === 'GET') {
-      try {
-        const fetchedReviews = await review.getAll();
-
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ data: fetchedReviews }),
-        };
-      } catch (error) {
-        console.error(`GET "/": Database Error: ${error}`);
-        return { statusCode: 500 };
-      }
+      const httpResponse = reviewsRequestHandler.get(event);
+      return httpResponse;
     } else if (method === 'POST') {
       if (typeof event.body !== 'string') {
           return {
