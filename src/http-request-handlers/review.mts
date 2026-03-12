@@ -107,3 +107,23 @@ export const getById = async (event: LambdaFunctionURLEvent) => {
     body: JSON.stringify({ data: fetchedReview }),
   };
 };
+
+
+export const del = async (event: LambdaFunctionURLEvent) => {
+  const reviewId = event.requestContext.http.path.substring(1);
+
+  let deletionSuccessful = true;
+
+  try {
+    deletionSuccessful = await reviewsDb.remove(reviewId);
+  } catch (error) {
+    console.error(`DELETE "/${reviewId}": Database Error: ${error}`);
+    return { statusCode: 500 };
+  }
+
+  if (!deletionSuccessful) {
+    return { statusCode: 404 };
+  }
+
+  return { statusCode: 204 };
+};

@@ -23,20 +23,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
       const httpResponse = reviewsRequestHandler.getById(event);
       return httpResponse;
     } else if (method === 'DELETE') {
-      let deletionSuccessful = true;
-
-      try {
-        deletionSuccessful = await review.remove(reviewId);
-      } catch (error) {
-        console.error(`DELETE "/${reviewId}": Database Error: ${error}`);
-        return { statusCode: 500 };
-      }
-
-      if (!deletionSuccessful) {
-        return { statusCode: 404 };
-      }
-
-      return { statusCode: 204 };
+      const httpResponse = reviewsRequestHandler.del(event);
+      return httpResponse;
     } else if (method === 'PATCH') {
       if (typeof event.body !== 'string') {
         return {
