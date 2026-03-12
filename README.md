@@ -11,8 +11,6 @@ A simple example project I wrote to practice using AWS serverless functions ([AW
 | [src/http-request-handlers/review.mts](https://github.com/VSirvio/aws-serverless-example/blob/main/src/http-request-handlers/review.mts) | one HTTP request handler for each API endpoint |
 | [db-sample-data.json](https://github.com/VSirvio/aws-serverless-example/blob/main/db-sample-data.json) | sample data for DB |
 | [main.tf](https://github.com/VSirvio/aws-serverless-example/blob/main/main.tf) | Terraform configuration |
-| [package.json](https://github.com/VSirvio/aws-serverless-example/blob/main/package.json) | Node.js project configuration |
-| [tsconfig.json](https://github.com/VSirvio/aws-serverless-example/blob/main/tsconfig.json "tsconfig.json") | TypeScript compiler configuration |
 
 ## How to build
 
