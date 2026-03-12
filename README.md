@@ -38,22 +38,22 @@ A simple example project I wrote to practice using AWS serverless functions ([AW
 
 ## API reference
 
-| Endpoint                                                                                       | Description                      |
-|------------------------------------------------------------------------------------------------|----------------------------------|
-| [GET /](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-)             | List all restaurant reviews      |
-| [GET /{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-id)       | Get a restaurant review by id    |
-| [POST /](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#post-)           | Add a new restaurant review      |
-| [DELETE /{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#delete-id) | Delete a restaurant review by id |
-| [PATCH /{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#patch-id)   | Edit a restaurant review by id   |
+| Endpoint                                                                                               | Description                      |
+|--------------------------------------------------------------------------------------------------------|----------------------------------|
+| [GET /reviews](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-)              | List all restaurant reviews      |
+| [GET /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#get-id)       | Get a restaurant review by id    |
+| [POST /reviews](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#post-)            | Add a new restaurant review      |
+| [DELETE /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#delete-id) | Delete a restaurant review by id |
+| [PATCH /reviews/{id}](https://github.com/VSirvio/aws-serverless-example?tab=readme-ov-file#patch-id)   | Edit a restaurant review by id   |
 
-### GET /
+### GET /reviews
 
 List all restaurant reviews
 
 #### Sample request
 
 ```bash
-curl -X GET "https://$API_URL/"
+curl -X GET "https://$API_URL/reviews"
 ```
 
 #### Sample response
@@ -77,14 +77,14 @@ curl -X GET "https://$API_URL/"
 }
 ```
 
-### GET /{id}
+### GET /reviews/{id}
 
 Get a restaurant review by id
 
 #### Sample request
 
 ```bash
-curl -X GET "https://$API_URL/A8BVM"
+curl -X GET "https://$API_URL/reviews/A8BVM"
 ```
 
 #### Sample response
@@ -100,14 +100,14 @@ curl -X GET "https://$API_URL/A8BVM"
 }
 ```
 
-### POST /
+### POST /reviews
 
 Add a new restaurant review
 
 #### Sample request
 
 ```bash
-curl -X POST "https://$API_URL/" \
+curl -X POST "https://$API_URL/reviews" \
      -H 'Content-Type: application/json' \
      -d '{"date": "2025-04-16", "restaurant": "Texas Steak House", "stars": 4}'
 ```
@@ -125,14 +125,14 @@ curl -X POST "https://$API_URL/" \
 }
 ```
 
-### DELETE /{id}
+### DELETE /reviews/{id}
 
 Delete a restaurant review by id
 
 #### Sample request
 
 ```bash
-curl -X DELETE "https://$API_URL/2NAW2"
+curl -X DELETE "https://$API_URL/reviews/2NAW2"
 ```
 
 #### Sample response
@@ -141,14 +141,14 @@ curl -X DELETE "https://$API_URL/2NAW2"
 –
 ```
 
-### PATCH /{id}
+### PATCH /reviews/{id}
 
 Edit a restaurant review by id
 
 #### Sample request
 
 ```bash
-curl -X PATCH "https://$API_URL/2NAW2" \
+curl -X PATCH "https://$API_URL/reviews/2NAW2" \
      -H 'Content-Type: application/json' \
      -d '{"restaurant": "Texas Coffee House", "stars": 3}'
 ```

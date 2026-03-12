@@ -87,7 +87,7 @@ export const post = async (event: LambdaFunctionURLEvent) => {
 
 
 export const getById = async (event: LambdaFunctionURLEvent) => {
-  const reviewId = event.requestContext.http.path.substring(1);
+  const reviewId = event.requestContext.http.path.substring(9);
 
   let fetchedReview = null;
 
@@ -110,7 +110,7 @@ export const getById = async (event: LambdaFunctionURLEvent) => {
 
 
 export const del = async (event: LambdaFunctionURLEvent) => {
-  const reviewId = event.requestContext.http.path.substring(1);
+  const reviewId = event.requestContext.http.path.substring(9);
 
   let deletionSuccessful = true;
 
@@ -130,7 +130,7 @@ export const del = async (event: LambdaFunctionURLEvent) => {
 
 
 export const patch = async (event: LambdaFunctionURLEvent) => {
-  const reviewId = event.requestContext.http.path.substring(1);
+  const reviewId = event.requestContext.http.path.substring(9);
 
   if (typeof event.body !== 'string') {
     return {
