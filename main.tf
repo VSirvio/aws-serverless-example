@@ -4,6 +4,8 @@ locals {
   reviews_table_name = "restaurant-reviews"
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_dynamodb_table" "restaurant_reviews_table" {
   name           = local.reviews_table_name
   read_capacity  = 5
@@ -32,14 +34,65 @@ resource "aws_iam_role" "execution_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_basic_execution_role_policy" {
-  role       = aws_iam_role.execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+resource "aws_iam_role_policy" "lambda_logging_policy" {
+  name = "serverless-example-project-lambda-logging-policy"
+  role = aws_iam_role.execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Action    = "logs:CreateLogGroup"
+        Resource  = "arn:aws:logs:${aws_lambda_function.main_function.region}:${data.aws_caller_identity.current.account_id}:*"
+        Condition = {
+          ArnEquals = {
+            "lambda:SourceFunctionArn" = aws_lambda_function.main_function.arn
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ]
+        Resource  = "arn:aws:logs:${aws_lambda_function.main_function.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${aws_lambda_function.main_function.function_name}:*"
+        Condition = {
+          ArnEquals = {
+            "lambda:SourceFunctionArn" = aws_lambda_function.main_function.arn
+          }
+        }
+      },
+    ]
+  })
 }
 
-resource "aws_iam_role_policy_attachment" "dynamodb_full_access_policy" {
-  role       = aws_iam_role.execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+resource "aws_iam_role_policy" "dynamodb_access_policy" {
+  name = "serverless-example-project-dynamodb-access-policy"
+  role = aws_iam_role.execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DeleteItem",
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:Scan",
+          "dynamodb:UpdateItem",
+        ]
+        Resource  = aws_dynamodb_table.restaurant_reviews_table.arn
+        Condition = {
+          ArnEquals = {
+            "lambda:SourceFunctionArn" = aws_lambda_function.main_function.arn
+          }
+        }
+      },
+    ]
+  })
 }
 
 data "archive_file" "lambda_deployment_package" {
