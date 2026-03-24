@@ -13,7 +13,11 @@ export const get = async (_: LambdaFunctionURLEvent) => {
     };
   } catch (error) {
     console.error(`GET "/": Database Error: ${error}`);
-    return { statusCode: 500 };
+
+    return {
+      statusCode: 500,
+      body: '{ "error": { "message": "Internal server error" } }',
+    };
   }
 };
 
@@ -76,7 +80,11 @@ export const post = async (event: LambdaFunctionURLEvent) => {
     createdReview = await reviewsDb.create(reviewData);
   } catch (error) {
     console.error(`POST "/": Database Error: ${error}`);
-    return { statusCode: 500 };
+
+    return {
+      statusCode: 500,
+      body: '{ "error": { "message": "Internal server error" } }',
+    };
   }
 
   return {
@@ -95,11 +103,18 @@ export const getById = async (event: LambdaFunctionURLEvent) => {
     fetchedReview = await reviewsDb.getById(reviewId);
   } catch (error) {
     console.error(`GET "/${reviewId}": Database Error: ${error}`);
-    return { statusCode: 500 };
+
+    return {
+      statusCode: 500,
+      body: '{ "error": { "message": "Internal server error" } }',
+    };
   }
 
   if (!fetchedReview) {
-    return { statusCode: 404 };
+    return {
+      statusCode: 404,
+      body: '{ "error": { "message": "Review not found" } }',
+    };
   }
 
   return {
@@ -118,14 +133,24 @@ export const del = async (event: LambdaFunctionURLEvent) => {
     deletionSuccessful = await reviewsDb.remove(reviewId);
   } catch (error) {
     console.error(`DELETE "/${reviewId}": Database Error: ${error}`);
-    return { statusCode: 500 };
+
+    return {
+      statusCode: 500,
+      body: '{ "error": { "message": "Internal server error" } }',
+    };
   }
 
   if (!deletionSuccessful) {
-    return { statusCode: 404 };
+    return {
+      statusCode: 404,
+      body: '{ "error": { "message": "Review not found" } }',
+    };
   }
 
-  return { statusCode: 204 };
+  return {
+    statusCode: 204,
+    body: '{ "data": "Deletion successful" }',
+  };
 };
 
 
@@ -203,11 +228,18 @@ export const patch = async (event: LambdaFunctionURLEvent) => {
     updatedReview = await reviewsDb.update(reviewId, reviewUpdate);
   } catch (error) {
     console.error(`PATCH "/${reviewId}": Database Error: ${error}`);
-    return { statusCode: 500 };
+
+    return {
+      statusCode: 500,
+      body: '{ "error": { "message": "Internal server error" } }',
+    };
   }
 
   if (!updatedReview) {
-    return { statusCode: 404 };
+    return {
+      statusCode: 404,
+      body: '{ "error": { "message": "Review not found" } }',
+    };
   }
 
   return {
