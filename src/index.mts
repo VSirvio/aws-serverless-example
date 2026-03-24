@@ -4,8 +4,7 @@ import * as reviewsRequestHandler from './http-request-handlers/review.mjs';
 
 
 export const handler = async (event: LambdaFunctionURLEvent) => {
-  const path = event.requestContext.http.path;
-  const method = event.requestContext.http.method;
+  const { path, method } = event.requestContext.http;
 
   if (path === '/reviews') {
     if (method === 'GET') {
