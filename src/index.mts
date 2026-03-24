@@ -27,5 +27,8 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
     };
   }
 
-  return { statusCode: 404 };
+  return {
+    statusCode: 404,
+    body: '{ "error": { "message": "Resource not found" } }',
+  };
 };
