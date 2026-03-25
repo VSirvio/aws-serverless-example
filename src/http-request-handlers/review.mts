@@ -1,6 +1,7 @@
 import { LambdaFunctionURLEvent, LambdaFunctionURLResult } from 'aws-lambda';
 
 import * as reviewsDb from '../database/review.mjs';
+import { RestaurantReviewUpdate } from '../types.mjs';
 import { isValidDate, isValidNumberOfStars } from '../utils.mjs';
 
 
@@ -180,12 +181,12 @@ export const patch = async (event: LambdaFunctionURLEvent): Promise<LambdaFuncti
     };
   }
 
-  let updateIsEmpty = true;
+  const finalUpdateObject: RestaurantReviewUpdate = {};
 
   if (reviewUpdate.date !== undefined) {
-    updateIsEmpty = false;
-
-    if (isNaN(new Date(reviewUpdate.date).valueOf())) {
+    if (isValidDate(reviewUpdate.date)) {
+      finalUpdateObject.date = new Date(reviewUpdate.date);
+    } else {
       return {
         statusCode: 400,
         body: '{ "error": { "message": "Invalid date value for \'date\' field" } }',
@@ -194,9 +195,9 @@ export const patch = async (event: LambdaFunctionURLEvent): Promise<LambdaFuncti
   }
 
   if (reviewUpdate.restaurant !== undefined) {
-    updateIsEmpty = false;
-
-    if (typeof reviewUpdate.restaurant !== 'string') {
+    if (typeof reviewUpdate.restaurant === 'string') {
+      finalUpdateObject.restaurant = reviewUpdate.restaurant;
+    } else {
       return {
         statusCode: 400,
         body: '{ "error": { "message": "String value expected for \'restaurant\' field" } }',
@@ -205,9 +206,9 @@ export const patch = async (event: LambdaFunctionURLEvent): Promise<LambdaFuncti
   }
 
   if (reviewUpdate.stars !== undefined) {
-    updateIsEmpty = false;
-
-    if (![1, 2, 3, 4, 5].includes(reviewUpdate.stars)) {
+    if (isValidNumberOfStars(reviewUpdate.stars)) {
+      finalUpdateObject.stars = reviewUpdate.stars;
+    } else {
       return {
         statusCode: 400,
         body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
@@ -215,7 +216,7 @@ export const patch = async (event: LambdaFunctionURLEvent): Promise<LambdaFuncti
     }
   }
 
-  if (updateIsEmpty) {
+  if (Object.keys(finalUpdateObject).length === 0) {
     return {
       statusCode: 400,
       body: '{ "error": { "message": "Request did not include any data to update" } }',
@@ -224,7 +225,7 @@ export const patch = async (event: LambdaFunctionURLEvent): Promise<LambdaFuncti
 
   let updatedReview = null;
   try {
-    updatedReview = await reviewsDb.update(reviewId, reviewUpdate);
+    updatedReview = await reviewsDb.update(reviewId, finalUpdateObject);
   } catch (error) {
     console.error(`PATCH "/${reviewId}": Database Error: ${error}`);
 

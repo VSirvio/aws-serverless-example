@@ -15,6 +15,7 @@ import {
 
 import {
   NewRestaurantReview,
+  RestaurantReviewUpdate,
 } from '../types.mjs';
 
 import { asRestaurantReview } from '../utils.mjs';
@@ -117,7 +118,7 @@ export const remove = async (reviewId: string) => {
 };
 
 
-export const update = async (reviewId: string, newData: Record<string, any>) => {
+export const update = async (reviewId: string, newData: RestaurantReviewUpdate) => {
   const updateExpression = [];
   const expressionAttributeNames: Record<string, string> = { '#id': 'id' };
   const expressionAttributeValues: Record<string, NativeAttributeValue> = { ':id': reviewId };
@@ -125,7 +126,7 @@ export const update = async (reviewId: string, newData: Record<string, any>) => 
   if (newData.date !== undefined) {
     updateExpression.push('#date = :date');
     expressionAttributeNames['#date'] = 'date';
-    expressionAttributeValues[':date'] = new Date(newData.date).toISOString().slice(0, 10);
+    expressionAttributeValues[':date'] = newData.date.toISOString();
   }
 
   if (newData.restaurant !== undefined) {
@@ -163,5 +164,5 @@ export const update = async (reviewId: string, newData: Record<string, any>) => 
     }
   }
 
-  return data.Attributes;
+  return asRestaurantReview(data.Attributes!);
 };
