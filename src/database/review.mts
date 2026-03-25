@@ -88,7 +88,7 @@ export const getById = async (reviewId: string) => {
     return null;
   }
 
-  return data.Item;
+  return asRestaurantReview(data.Item);
 };
 
 
