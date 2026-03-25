@@ -1,9 +1,9 @@
-import { LambdaFunctionURLEvent } from 'aws-lambda';
+import { LambdaFunctionURLEvent, LambdaFunctionURLResult } from 'aws-lambda';
 
 import * as reviewsDb from '../database/review.mjs';
 
 
-export const get = async (_: LambdaFunctionURLEvent) => {
+export const get = async (_: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   try {
     const fetchedReviews = await reviewsDb.getAll();
 
@@ -22,7 +22,7 @@ export const get = async (_: LambdaFunctionURLEvent) => {
 };
 
 
-export const post = async (event: LambdaFunctionURLEvent) => {
+export const post = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   if (typeof event.body !== 'string') {
     return {
       statusCode: 400,
@@ -94,7 +94,7 @@ export const post = async (event: LambdaFunctionURLEvent) => {
 };
 
 
-export const getById = async (event: LambdaFunctionURLEvent) => {
+export const getById = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   const reviewId = event.requestContext.http.path.substring(9);
 
   let fetchedReview = null;
@@ -124,7 +124,7 @@ export const getById = async (event: LambdaFunctionURLEvent) => {
 };
 
 
-export const del = async (event: LambdaFunctionURLEvent) => {
+export const del = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   const reviewId = event.requestContext.http.path.substring(9);
 
   let deletionSuccessful = true;
@@ -154,7 +154,7 @@ export const del = async (event: LambdaFunctionURLEvent) => {
 };
 
 
-export const patch = async (event: LambdaFunctionURLEvent) => {
+export const patch = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   const reviewId = event.requestContext.http.path.substring(9);
 
   if (typeof event.body !== 'string') {
