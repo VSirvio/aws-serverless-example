@@ -13,6 +13,8 @@ import {
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
+import { asRestaurantReview } from '../utils.mjs';
+
 
 const dynamoDbClient = new DynamoDBClient({});
 const dynamoDbDocClient = DynamoDBDocumentClient.from(dynamoDbClient);
@@ -27,7 +29,7 @@ export const getAll = async () => {
 
   const data = await dynamoDbDocClient.send(new ScanCommand(params));
 
-  return data.Items;
+  return data.Items!.map(item => asRestaurantReview(item));
 };
 
 
