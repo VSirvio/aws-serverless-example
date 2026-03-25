@@ -113,7 +113,7 @@ export const remove = async (reviewId: string) => {
     }
   }
 
-  return data.Attributes!;
+  return asRestaurantReview(data.Attributes!);
 };
 
 
