@@ -13,6 +13,10 @@ import {
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
+import {
+  NewRestaurantReview,
+} from '../types.mjs';
+
 import { asRestaurantReview } from '../utils.mjs';
 
 
@@ -33,7 +37,7 @@ export const getAll = async () => {
 };
 
 
-export const create = async (review: Record<string, any>) => {
+export const create = async (review: NewRestaurantReview) => {
   let finalReviewObject = null;
 
   while (!finalReviewObject) {
@@ -44,7 +48,7 @@ export const create = async (review: Record<string, any>) => {
 
     finalReviewObject = {
       id: reviewId,
-      date: new Date(review.date).toISOString().slice(0, 10),
+      date: review.date.toISOString(),
       restaurant: review.restaurant,
       stars: review.stars,
     };
@@ -66,7 +70,7 @@ export const create = async (review: Record<string, any>) => {
     }
   }
 
-  return finalReviewObject;
+  return asRestaurantReview(finalReviewObject);
 };
 
 

@@ -1,6 +1,7 @@
 import { LambdaFunctionURLEvent, LambdaFunctionURLResult } from 'aws-lambda';
 
 import * as reviewsDb from '../database/review.mjs';
+import { isValidDate, isValidNumberOfStars } from '../utils.mjs';
 
 
 export const get = async (_: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
@@ -54,15 +55,14 @@ export const post = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctio
     };
   }
 
-  if (![1, 2, 3, 4, 5].includes(newReview.stars)) {
+  if (!isValidNumberOfStars(newReview.stars)) {
     return {
       statusCode: 400,
       body: '{ "error": { "message": "Integer between 1-5 expected for \'stars\' field" } }',
     };
   }
 
-  const date = new Date(newReview.date);
-  if (isNaN(date.valueOf())) {
+  if (!isValidDate(newReview.date)) {
     return {
       statusCode: 400,
       body: '{ "error": { "message": "Invalid date value for \'date\' field" } }',
@@ -72,7 +72,7 @@ export const post = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctio
   let createdReview = null;
   try {
     const reviewData = {
-      date: date.toISOString().slice(0, 10),
+      date: new Date(newReview.date),
       restaurant: newReview.restaurant,
       stars: newReview.stars,
     };
