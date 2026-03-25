@@ -93,19 +93,21 @@ export const remove = async (reviewId: string) => {
       id: reviewId,
     },
     ConditionExpression: 'attribute_exists(id)',
+    ReturnValues: ReturnValue.ALL_OLD,
   };
 
+  let data = null;
   try {
-    await dynamoDbDocClient.send(new DeleteCommand(params));
+    data = await dynamoDbDocClient.send(new DeleteCommand(params));
   } catch (error) {
     if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
-      return false;
+      return null;
     } else {
       throw error;
     }
   }
 
-  return true;
+  return data.Attributes!;
 };
 
 

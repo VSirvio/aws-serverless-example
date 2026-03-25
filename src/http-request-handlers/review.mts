@@ -127,10 +127,9 @@ export const getById = async (event: LambdaFunctionURLEvent): Promise<LambdaFunc
 export const del = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   const reviewId = event.requestContext.http.path.substring(9);
 
-  let deletionSuccessful = true;
-
+  let deletedReview = null;
   try {
-    deletionSuccessful = await reviewsDb.remove(reviewId);
+    deletedReview = await reviewsDb.remove(reviewId);
   } catch (error) {
     console.error(`DELETE "/${reviewId}": Database Error: ${error}`);
 
@@ -140,7 +139,7 @@ export const del = async (event: LambdaFunctionURLEvent): Promise<LambdaFunction
     };
   }
 
-  if (!deletionSuccessful) {
+  if (deletedReview === null) {
     return {
       statusCode: 404,
       body: '{ "error": { "message": "Review not found" } }',
@@ -148,8 +147,8 @@ export const del = async (event: LambdaFunctionURLEvent): Promise<LambdaFunction
   }
 
   return {
-    statusCode: 204,
-    body: '{ "data": "Deletion successful" }',
+    statusCode: 200,
+    body: JSON.stringify({ data: deletedReview }),
   };
 };
 
