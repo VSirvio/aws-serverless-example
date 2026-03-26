@@ -64,13 +64,13 @@ curl -X GET "https://$API_URL/reviews"
   "data": [
     {
       "id": "A8BVM",
-      "date": "2025-06-07",
+      "date": "2025-06-07T13:35:20.000Z",
       "restaurant": "Big Bob's Barbecue",
       "stars": 3
     },
     {
       "id": "Z3Y9W",
-      "date": "2025-06-18",
+      "date": "2025-06-18T19:05:03.000Z",
       "restaurant": "Luigi's Trattoria",
       "stars": 2
     }
@@ -94,7 +94,7 @@ curl -X GET "https://$API_URL/reviews/A8BVM"
 {
   "data": {
     "id": "A8BVM",
-    "date": "2025-06-07",
+    "date": "2025-06-07T13:35:20.000Z",
     "restaurant": "Big Bob's Barbecue",
     "stars": 3
   }
@@ -110,7 +110,7 @@ Add a new restaurant review
 ```bash
 curl -X POST "https://$API_URL/reviews" \
      -H 'Content-Type: application/json' \
-     -d '{"date": "2025-04-16", "restaurant": "Texas Steak House", "stars": 4}'
+     -d '{"date": "2025-04-16T17:41:51.000Z", "restaurant": "Texas Steak House", "stars": 4}'
 ```
 
 #### Sample response
@@ -119,7 +119,7 @@ curl -X POST "https://$API_URL/reviews" \
 {
   "data": {
     "id": "2NAW2",
-    "date": "2025-04-16",
+    "date": "2025-04-16T17:41:51.000Z",
     "restaurant": "Texas Steak House",
     "stars": 4
   }
@@ -160,7 +160,7 @@ curl -X PATCH "https://$API_URL/reviews/2NAW2" \
 {
   "data": {
     "id": "2NAW2",
-    "date": "2025-04-16",
+    "date": "2025-04-16T17:41:51.000Z",
     "restaurant": "Texas Coffee House",
     "stars": 3
   }
