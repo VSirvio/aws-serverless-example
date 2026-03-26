@@ -138,8 +138,15 @@ curl -X DELETE "https://$API_URL/reviews/2NAW2"
 
 #### Sample response
 
-```
-–
+```json
+{
+  "data": {
+    "id": "2NAW2",
+    "date": "2025-04-16T17:41:51.000Z",
+    "restaurant": "Texas Steak House",
+    "stars": 4
+  }
+}
 ```
 
 ### PATCH /reviews/{id}
