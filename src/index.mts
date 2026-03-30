@@ -1,6 +1,7 @@
 import { LambdaFunctionURLEvent } from 'aws-lambda';
 
 import * as reviewsRequestHandler from './http-request-handlers/review.mjs';
+import { isUUID } from './utils.mjs';
 
 
 export const handler = async (event: LambdaFunctionURLEvent) => {
@@ -12,7 +13,7 @@ export const handler = async (event: LambdaFunctionURLEvent) => {
     } else if (method === 'POST') {
       return reviewsRequestHandler.post(event);
     }
-  } else if (path.match('^/reviews/[A-Z0-9]{5}$')) {
+  } else if (path.startsWith('/reviews/') && isUUID(path.substring(9))) {
     if (method === 'GET') {
       return reviewsRequestHandler.getById(event);
     } else if (method === 'DELETE') {
