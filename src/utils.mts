@@ -1,6 +1,11 @@
 import { RestaurantReview, Stars } from './types.mjs';
 
 
+export const isUUID = (uuid: unknown): uuid is string => {
+  return typeof uuid === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(uuid);
+};
+
 export const isValidDate = (date: unknown): date is string => {
   return typeof date === 'string' && !isNaN(new Date(date).valueOf());
 };
