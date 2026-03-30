@@ -13,6 +13,8 @@ import {
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 
+import { randomUUID } from 'node:crypto';
+
 import {
   NewRestaurantReview,
   RestaurantReviewUpdate,
@@ -42,13 +44,8 @@ export const create = async (review: NewRestaurantReview) => {
   let finalReviewObject = null;
 
   while (!finalReviewObject) {
-    let reviewId = '';
-    for (let i = 0; i < 5; i++) {
-      reviewId += '0123456789ABCDEFGHJKMNPQRSTVWXYZ'[Math.floor(Math.random() * 32)];
-    }
-
     finalReviewObject = {
-      id: reviewId,
+      id: randomUUID(),
       date: review.date.toISOString(),
       restaurant: review.restaurant,
       stars: review.stars,
