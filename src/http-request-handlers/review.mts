@@ -5,6 +5,11 @@ import { RestaurantReviewUpdate } from '../types.mjs';
 import { isValidDate, isValidNumberOfStars } from '../utils.mjs';
 
 
+/**
+ * Handles a "GET /reviews" request.
+ * @param _ - The Lambda function event received by the Lambda handler
+ * @returns The result for the Lambda function to return
+ */
 export const get = async (_: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   try {
     const fetchedReviews = await reviewsDb.getAll();
@@ -24,6 +29,11 @@ export const get = async (_: LambdaFunctionURLEvent): Promise<LambdaFunctionURLR
 };
 
 
+/**
+ * Handles a "POST /reviews" request.
+ * @param event - The Lambda function event received by the Lambda handler
+ * @returns The result for the Lambda function to return
+ */
 export const post = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   if (typeof event.body !== 'string') {
     return {
@@ -95,6 +105,11 @@ export const post = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctio
 };
 
 
+/**
+ * Handles a "GET /reviews/{id}" request.
+ * @param event - The Lambda function event received by the Lambda handler
+ * @returns The result for the Lambda function to return
+ */
 export const getById = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   const reviewId = event.requestContext.http.path.substring(9);
 
@@ -125,6 +140,11 @@ export const getById = async (event: LambdaFunctionURLEvent): Promise<LambdaFunc
 };
 
 
+/**
+ * Handles a "DELETE /reviews/{id}" request.
+ * @param event - The Lambda function event received by the Lambda handler
+ * @returns The result for the Lambda function to return
+ */
 export const del = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   const reviewId = event.requestContext.http.path.substring(9);
 
@@ -154,6 +174,11 @@ export const del = async (event: LambdaFunctionURLEvent): Promise<LambdaFunction
 };
 
 
+/**
+ * Handles a "PATCH /reviews/{id}" request.
+ * @param event - The Lambda function event received by the Lambda handler
+ * @returns The result for the Lambda function to return
+ */
 export const patch = async (event: LambdaFunctionURLEvent): Promise<LambdaFunctionURLResult> => {
   const reviewId = event.requestContext.http.path.substring(9);
 
