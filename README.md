@@ -63,13 +63,13 @@ curl -X GET "https://$API_URL/reviews"
 {
   "data": [
     {
-      "id": "A8BVM",
+      "id": "dc6b4b43-de1f-4049-a3db-9db723ca0bc1",
       "date": "2025-06-07T13:35:20.000Z",
       "restaurant": "Big Bob's Barbecue",
       "stars": 3
     },
     {
-      "id": "Z3Y9W",
+      "id": "0ab75db8-ee66-4328-b72c-0fce9d3ae3d5",
       "date": "2025-06-18T19:05:03.000Z",
       "restaurant": "Luigi's Trattoria",
       "stars": 2
@@ -85,7 +85,7 @@ Get a restaurant review by id
 #### Sample request
 
 ```bash
-curl -X GET "https://$API_URL/reviews/A8BVM"
+curl -X GET "https://$API_URL/reviews/dc6b4b43-de1f-4049-a3db-9db723ca0bc1"
 ```
 
 #### Sample response
@@ -93,7 +93,7 @@ curl -X GET "https://$API_URL/reviews/A8BVM"
 ```json
 {
   "data": {
-    "id": "A8BVM",
+    "id": "dc6b4b43-de1f-4049-a3db-9db723ca0bc1",
     "date": "2025-06-07T13:35:20.000Z",
     "restaurant": "Big Bob's Barbecue",
     "stars": 3
@@ -118,7 +118,7 @@ curl -X POST "https://$API_URL/reviews" \
 ```json
 {
   "data": {
-    "id": "2NAW2",
+    "id": "71832b34-dfed-4468-aeab-66bb063ca229",
     "date": "2025-04-16T17:41:51.000Z",
     "restaurant": "Texas Steak House",
     "stars": 4
@@ -133,7 +133,7 @@ Delete a restaurant review by id
 #### Sample request
 
 ```bash
-curl -X DELETE "https://$API_URL/reviews/2NAW2"
+curl -X DELETE "https://$API_URL/reviews/71832b34-dfed-4468-aeab-66bb063ca229"
 ```
 
 #### Sample response
@@ -141,7 +141,7 @@ curl -X DELETE "https://$API_URL/reviews/2NAW2"
 ```json
 {
   "data": {
-    "id": "2NAW2",
+    "id": "71832b34-dfed-4468-aeab-66bb063ca229",
     "date": "2025-04-16T17:41:51.000Z",
     "restaurant": "Texas Steak House",
     "stars": 4
@@ -156,7 +156,7 @@ Edit a restaurant review by id
 #### Sample request
 
 ```bash
-curl -X PATCH "https://$API_URL/reviews/2NAW2" \
+curl -X PATCH "https://$API_URL/reviews/71832b34-dfed-4468-aeab-66bb063ca229" \
      -H 'Content-Type: application/json' \
      -d '{"restaurant": "Texas Coffee House", "stars": 3}'
 ```
@@ -166,7 +166,7 @@ curl -X PATCH "https://$API_URL/reviews/2NAW2" \
 ```json
 {
   "data": {
-    "id": "2NAW2",
+    "id": "71832b34-dfed-4468-aeab-66bb063ca229",
     "date": "2025-04-16T17:41:51.000Z",
     "restaurant": "Texas Coffee House",
     "stars": 3
