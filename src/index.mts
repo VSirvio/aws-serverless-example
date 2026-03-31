@@ -4,6 +4,7 @@ import * as reviewsRequestHandler from './http-request-handlers/review.mjs';
 import { isUUID } from './utils.mjs';
 
 
+/** The Lambda handler function. */
 export const handler = async (event: LambdaFunctionURLEvent) => {
   const { path, method } = event.requestContext.http;
 
