@@ -29,6 +29,9 @@ const dynamoDbDocClient = DynamoDBDocumentClient.from(dynamoDbClient);
 const tableName = process.env.REVIEWS_TABLE_NAME;
 
 
+/**
+ * Fetches all restaurant reviews from the database.
+ */
 export const getAll = async () => {
   const params = {
     TableName: tableName,
@@ -40,6 +43,10 @@ export const getAll = async () => {
 };
 
 
+/**
+ * Adds a new restaurant review to the database.
+ * @returns The added restaurant review
+ */
 export const create = async (review: NewRestaurantReview) => {
   let finalReviewObject = null;
 
@@ -72,6 +79,10 @@ export const create = async (review: NewRestaurantReview) => {
 };
 
 
+/**
+ * Fetches a single restaurant review from the database by its ID.
+ * @returns A restaurant review or null if no review with the given ID exists
+ */
 export const getById = async (reviewId: string) => {
   const params = {
     TableName: tableName,
@@ -90,6 +101,10 @@ export const getById = async (reviewId: string) => {
 };
 
 
+/**
+ * Removes the restaurant review with the given ID from the database.
+ * @returns The removed review or null if no review with the given ID exists
+ */
 export const remove = async (reviewId: string) => {
   const params = {
     TableName: tableName,
@@ -115,6 +130,11 @@ export const remove = async (reviewId: string) => {
 };
 
 
+/**
+ * Modifies the restaurant review that has the given ID.
+ * @param newData - New values for the fields that should be modified
+ * @returns The restaurant review after modifying or null if no review with the given ID exists
+ */
 export const update = async (reviewId: string, newData: RestaurantReviewUpdate) => {
   const updateExpression = [];
   const expressionAttributeNames: Record<string, string> = { '#id': 'id' };
